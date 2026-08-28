@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English for Work - Level 2</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+        }
+
+        .exam-box,
+        .result-box {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title h1 {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .title p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            font-size: 20px;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: white;
+        }
+
+        .option:hover {
+            background: #f5f7fa;
+        }
+
+        .option.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+
+        .option input {
+            display: none;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            background: #2563eb;
+            color: white;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            text-align: center;
+        }
+
+        .result-box h1 {
+            margin-bottom: 25px;
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .percentage {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .stat h3 {
+            font-size: 24px;
+        }
+
+        .stat p {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .review {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .review h2 {
+            margin-bottom: 20px;
+        }
+
+        .review-item {
+            border: 1px solid #ddd;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .review-question {
+            font-weight: bold;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .your-answer,
+        .correct-answer {
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .correct {
+            border-left: 5px solid #16a34a;
+        }
+
+        .wrong {
+            border-left: 5px solid #dc2626;
+        }
+
+        .correct-text {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .wrong-text {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .result-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .exam-box,
+            .result-box {
+                padding: 22px;
+            }
+
+            .question {
+                font-size: 18px;
+            }
+
+            .stats {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- EXAM -->
+    <div class="exam-box" id="examBox">
+
+        <div class="title">
+            <h1>English for Work - Level 2</h1>
+            <p>Multiple Choice Question</p>
+        </div>
+
+        <div class="question-number" id="questionNumber"></div>
+
+        <div class="question" id="question"></div>
+
+        <div class="options" id="options"></div>
+
+        <div class="buttons">
+            <button id="previousBtn" onclick="previousQuestion()">
+                Previous
+            </button>
+
+            <button id="nextBtn" onclick="nextQuestion()">
+                Next
+            </button>
+
+            <button id="submitBtn" onclick="submitExam()" class="hidden">
+                Submit
+            </button>
+        </div>
+
+    </div>
+
+
+    <!-- RESULT -->
+    <div class="result-box hidden" id="resultBox">
+
+        <h1>EXAM COMPLETED</h1>
+
+        <div class="score" id="score"></div>
+
+        <div class="percentage" id="percentage"></div>
+
+        <div class="stats">
+            <div class="stat">
+                <h3 id="correctCount">0</h3>
+                <p>Correct</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="wrongCount">0</h3>
+                <p>Wrong</p>
+            </div>
+        </div>
+
+        <div class="result-buttons">
+            <button onclick="showReview()">
+                See Answers
+            </button>
+
+            <button onclick="restartExam()">
+                Try Again
+            </button>
+        </div>
+
+        <div class="review hidden" id="review">
+            <h2>Answer Review</h2>
+            <div id="reviewContent"></div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const questions = [
+
+    {
+        question: "In workplaces in Bangladesh, which official document provides safety rules, regulations, and guidelines that organizations must follow to ensure the health and safety of employees?",
+        options: [
+            "Company Attendance Policy",
+            "Employee Training Guide",
+            "Workplace Communication Manual",
+            "Bangladesh Standards for OHS"
+        ],
+        answer: "Bangladesh Standards for OHS"
+    },
+
+    {
+        question: "While expressing opinions during workplace meetings, employees should communicate in which manner?",
+        options: [
+            "Loudly and quickly",
+            "Without listening to others",
+            "Only with close friends",
+            "Politely and respectfully"
+        ],
+        answer: "Politely and respectfully"
+    },
+
+    {
+        question: "When attending workplace meetings, employees are expected to:",
+        options: [
+            "Arrive late",
+            "Use their phones all the time",
+            "Follow meeting procedures and proper etiquette",
+            "Ignore the speaker"
+        ],
+        answer: "Follow meeting procedures and proper etiquette"
+    },
+
+    {
+        question: "Which of the following options represents a recognized role of a team member within an organization?",
+        options: [
+            "Coach/Mentor",
+            "Customer",
+            "Visitor",
+            "Security Guard"
+        ],
+        answer: "Coach/Mentor"
+    },
+
+    {
+        question: "Which of the following options represents a recognized role of a team member within an organization?",
+        options: [
+            "Coach/Mentor",
+            "Reception Area",
+            "Company Building",
+            "Office Equipment"
+        ],
+        answer: "Coach/Mentor"
+    },
+
+    {
+        question: "Which sentence shows a complaint about food taste?",
+        options: [
+            "This food is expensive.",
+            "I ordered food.",
+            "The restaurant is crowded.",
+            "This is spicy."
+        ],
+        answer: "This is spicy."
+    },
+
+    {
+        question: "A guest says, \"I'm allergic to nuts.\" In English, what should staff do?",
+        options: [
+            "Ignore the guest",
+            "Add more nuts",
+            "Be careful with ingredients",
+            "Offer any food without checking"
+        ],
+        answer: "Be careful with ingredients"
+    },
+
+    {
+        question: "Which question needs a yes or no answer?",
+        options: [
+            "Do you work here?",
+            "Where do you work?",
+            "Why do you work here?",
+            "How do you work?"
+        ],
+        answer: "Do you work here?"
+    },
+
+    {
+        question: "Which sentence is a polite request?",
+        options: [
+            "Help me now.",
+            "Can you help me, please?",
+            "You must help me.",
+            "Give me that."
+        ],
+        answer: "Can you help me, please?"
+    },
+
+    {
+        question: "Which of the following phrases has the same meaning as \"in the end\"?",
+        options: [
+            "At first",
+            "In the middle",
+            "At the beginning",
+            "Lastly"
+        ],
+        answer: "Lastly"
+    },
+
+    {
+        question: "You want to confirm if a meeting is today. Which question is correct?",
+        options: [
+            "Is it today?",
+            "Where is today?",
+            "Why today meeting?",
+            "Meeting is why?"
+        ],
+        answer: "Is it today?"
+    },
+
+    {
+        question: "Which sentence shows disagreement in a professional way?",
+        options: [
+            "You are completely wrong.",
+            "That's a stupid idea.",
+            "I don't like your idea.",
+            "I see it differently."
+        ],
+        answer: "I see it differently."
+    },
+
+    {
+        question: "Which abbreviation means \"For Your Information\" and is commonly used in emails?",
+        options: [
+            "ASAP",
+            "FYI",
+            "PFA",
+            "SOP"
+        ],
+        answer: "FYI"
+    },
+
+    {
+        question: "If someone repeatedly insults, threatens, or mistreats you at work, how can you describe this behavior in English?",
+        options: [
+            "Teamwork",
+            "Leadership",
+            "Cooperation",
+            "Harassment and bullying"
+        ],
+        answer: "Harassment and bullying"
+    }
+
+];
+
+
+let currentQuestion = 0;
+let userAnswers = new Array(questions.length).fill(null);
+
+
+/* SHOW QUESTION */
+
+function showQuestion() {
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${currentQuestion + 1} of ${questions.length}`;
+
+    document.getElementById("question").textContent = q.question;
+
+    const optionsContainer = document.getElementById("options");
+
+    optionsContainer.innerHTML = "";
+
+    q.options.forEach(option => {
+
+        const label = document.createElement("label");
+
+        label.className = "option";
+
+        if (userAnswers[currentQuestion] === option) {
+            label.classList.add("selected");
+        }
+
+        label.innerHTML = `
+            <input type="radio"
+                   name="answer"
+                   value="${option}">
+            ${option}
+        `;
+
+        label.addEventListener("click", function () {
+
+            userAnswers[currentQuestion] = option;
+
+            document.querySelectorAll(".option").forEach(item => {
+                item.classList.remove("selected");
+            });
+
+            label.classList.add("selected");
+        });
+
+        optionsContainer.appendChild(label);
+
+    });
+
+
+    /* BUTTON CONTROL */
+
+    document.getElementById("previousBtn").disabled =
+        currentQuestion === 0;
+
+    if (currentQuestion === questions.length - 1) {
+
+        document.getElementById("nextBtn").classList.add("hidden");
+
+        document.getElementById("submitBtn").classList.remove("hidden");
+
+    } else {
+
+        document.getElementById("nextBtn").classList.remove("hidden");
+
+        document.getElementById("submitBtn").classList.add("hidden");
+
+    }
+
+}
+
+
+/* NEXT */
+
+function nextQuestion() {
+
+    if (currentQuestion < questions.length - 1) {
+
+        currentQuestion++;
+
+        showQuestion();
+
+    }
+
+}
+
+
+/* PREVIOUS */
+
+function previousQuestion() {
+
+    if (currentQuestion > 0) {
+
+        currentQuestion--;
+
+        showQuestion();
+
+    }
+
+}
+
+
+/* SUBMIT */
+
+function submitExam() {
+
+    const unanswered = userAnswers.filter(answer => answer === null).length;
+
+    if (unanswered > 0) {
+
+        const confirmSubmit = confirm(
+            `You have ${unanswered} unanswered question(s). Do you want to submit?`
+        );
+
+        if (!confirmSubmit) {
+            return;
+        }
+
+    }
+
+    let correct = 0;
+
+    questions.forEach((q, index) => {
+
+        if (userAnswers[index] === q.answer) {
+            correct++;
+        }
+
+    });
+
+    const wrong = questions.length - correct;
+
+    const percentage =
+        ((correct / questions.length) * 100).toFixed(1);
+
+
+    document.getElementById("examBox").classList.add("hidden");
+
+    document.getElementById("resultBox").classList.remove("hidden");
+
+    document.getElementById("score").textContent =
+        `${correct} / ${questions.length}`;
+
+    document.getElementById("percentage").textContent =
+        `Score: ${percentage}%`;
+
+    document.getElementById("correctCount").textContent =
+        correct;
+
+    document.getElementById("wrongCount").textContent =
+        wrong;
+
+}
+
+
+/* SHOW ANSWERS */
+
+function showReview() {
+
+    const review = document.getElementById("review");
+
+    review.classList.remove("hidden");
+
+    const content = document.getElementById("reviewContent");
+
+    content.innerHTML = "";
+
+    questions.forEach((q, index) => {
+
+        const userAnswer = userAnswers[index];
+
+        const isCorrect = userAnswer === q.answer;
+
+        const div = document.createElement("div");
+
+        div.className =
+            `review-item ${isCorrect ? "correct" : "wrong"}`;
+
+        div.innerHTML = `
+
+            <div class="review-question">
+                ${index + 1}. ${q.question}
+            </div>
+
+            <div class="your-answer">
+                <strong>Your Answer:</strong>
+                <span class="${isCorrect ? "correct-text" : "wrong-text"}">
+                    ${userAnswer ? userAnswer : "Not Answered"}
+                </span>
+            </div>
+
+            <div class="correct-answer">
+                <strong>Correct Answer:</strong>
+                <span class="correct-text">
+                    ${q.answer}
+                </span>
+            </div>
+
+        `;
+
+        content.appendChild(div);
+
+    });
+
+}
+
+
+/* RESTART */
+
+function restartExam() {
+
+    currentQuestion = 0;
+
+    userAnswers = new Array(questions.length).fill(null);
+
+    document.getElementById("resultBox").classList.add("hidden");
+
+    document.getElementById("examBox").classList.remove("hidden");
+
+    document.getElementById("review").classList.add("hidden");
+
+    showQuestion();
+
+}
+
+
+/* START */
+
+showQuestion();
+
+</script>
+
+</body>
+</html>
